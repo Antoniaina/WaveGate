@@ -4,6 +4,7 @@
 use tauri::{
     Manager,
     tray::{TrayIconBuilder, TrayIconEvent},
+    WindowEvent
 };
 
 fn main() {
