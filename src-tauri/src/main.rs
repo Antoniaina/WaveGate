@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::{
-    Manager, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}
+    Manager, WindowEvent, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}
 };
 
 fn main() {
@@ -14,7 +14,7 @@ fn main() {
                     if let TrayIconEvent::Click { button: MouseButton::Left, button_state: MouseButtonState::Up, .. } = event {
                         let app = tray.app_handle();
                         if let Some(window) = app.get_webview_window("popup") {
-                            if window.is_visible().unwrap_or(false) {
+                            if let Ok(true) = window.is_visible() {
                                 let _ = window.hide();
                             } else {
                                 let _ = window.show();
@@ -26,6 +26,15 @@ fn main() {
                 .build(app)?;
 
             app.manage(tray);
+
+            let window = app.get_webview_window("popup").unwrap();
+            let window_handle = window.clone();
+
+            window.on_window_event(move |event| {
+                if let WindowEvent::Focused(false) = event {
+                    let _ = window_handle.hide();
+                }
+            });
 
             Ok(())
         })
