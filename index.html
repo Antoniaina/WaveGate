@@ -2,15 +2,51 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="stylesheet" href="/src/base.css" />
+    <link rel="stylesheet" href="/src/tabs.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WaveGate</title>
-    <script type="module" src="/src/main.ts" defesr></script>
   </head>
 
   <body>
-    <div id="popup">
-      <h1>WaveGate</h1>
+    <div id="app">
+      <header class="header">
+        <div class="title">WaveGate</div>
+        <div class="preset">Preset</div>
+      </header>
+
+      <nav class="tabs">
+        <button class="tab active" data-tab="eq">EQ</button>
+        <button class="tab" data-tab="preamp">Preamp</button>
+        <button class="tab add" title="Add module">
+          <svg width="14" height="14" viewBox="0 0 24 24">
+            <path
+              d="M12 5v14M5 12h14"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+
+      </nav>
+
+      <main class="content">
+        <section class="tab-panel active" id="tab-eq">
+          <div class="placeholder"></div>
+        </section>
+
+        <section class="tab-panel" id="tab-preamp">
+          <div class="placeholder"></div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        Output: Default
+      </footer>
     </div>
+
+    <script type="module" src="/src/main.ts" defesr></script>
+
   </body>
 </html>
