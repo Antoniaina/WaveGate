@@ -15,8 +15,8 @@
       {
         "label": "popup",
         "title": "wavegate",
-        "width": 360,
-        "height": 480,
+        "width": 720,
+        "height": 420,
         "resizable": false,
         "fullscreen": false,
         "decorations": false,
