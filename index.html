@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="/src/base.css" />
     <link rel="stylesheet" href="/src/tabs.css" />
+    <link rel="stylesheet" href="/src/eq.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WaveGate</title>
   </head>
@@ -33,7 +34,26 @@
 
       <main class="content">
         <section class="tab-panel active" id="tab-eq">
-          <div class="placeholder"></div>
+          <div class="eq-container">
+            <div class="eq-header">
+              <div class="eq-toggle">
+                <span class="eq-label">EQ</span>
+
+                <label class="switch">
+                  <input type="checkbox" id="eq-enabled" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <select id="eq-bands-select">
+                <option value="15">15 Bands</option>
+                <option value="31">31 Bands</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+
+            <div class="eq-sliders" id="eq-sliders"></div>
+          </div>
         </section>
 
         <section class="tab-panel" id="tab-preamp">

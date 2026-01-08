@@ -1,0 +1,117 @@
+.eq-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.eq-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.eq-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-main);
+}
+
+.eq-label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.switch {
+    position: relative;
+    width: 38px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background: var(--border);
+    border-radius: 999px;
+    transition: background 0.2s;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    top: 3px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.switch input:checked + .slider {
+    background: #cfd3d8;
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(18px);
+    background: var(--bg-panel)
+    }
+
+.switch:hover .slider {
+    filter: brightness(1.05);
+}
+
+#eq-bands-select {
+    background: var(--bg-panel);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.eq-sliders {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    overflow-x: auto;
+}
+
+.eq-band {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 22px;
+    padding: 16px;
+}
+
+.eq-band input[type="range"] {
+    writing-mode: bt-lr;
+    -webkit-appearance: slider-vertical;
+    width: 6px;
+    height: 140px;
+}
+
+.eq-band span {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
