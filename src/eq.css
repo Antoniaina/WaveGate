@@ -91,6 +91,27 @@
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.2);
     overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+.eq-sliders::-webkit-scrollbar {
+    height: 6px;
+}
+
+.eq-sliders::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+}
+
+.eq-sliders::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.2s;
+}
+
+.eq-sliders::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
 }
 
 .eq-band {
