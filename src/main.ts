@@ -25,21 +25,91 @@ function createSliders(freqs: number[]) {
     const band = document.createElement("div");
     band.className = "eq-band";
 
-    const slider = document.createElement("input");
-    slider.type = "range";
-    slider.min = "-12";
-    slider.max = "12";
-    slider.step = "0.1";
-    slider.value = "0";
+    const sliderContainer = document.createElement("div");
+    sliderContainer.className = "eq-slider-container";
 
-    slider.addEventListener("input", () => {
-      console.log(`Freq ${freq}Hz: ${slider.value} dB`);
+    const track = document.createElement("div");
+    track.className = "eq-track";
+
+    const fill = document.createElement("div");
+    fill.className = "eq-fill";
+
+    const thumb = document.createElement("div");
+    thumb.className = "eq-thumb";
+
+    const centerLine = document.createElement("div");
+    centerLine.className = "eq-center-line";
+
+    let isDragging = false;
+    let currentValue = 0;
+    const min = -12;
+    const max = 12;
+
+    function updateFill(value: number) {
+      currentValue = value;
+      const centerPos = 50; 
+      const valuePos = ((value - min) / (max - min)) * 100;
+
+      if (value === 0) {
+        fill.style.height = "0%";
+        fill.style.top = "50%";
+        fill.style.bottom = "auto";
+      } else if (value > 0) {
+        fill.style.height = `${valuePos - centerPos}%`;
+        fill.style.bottom = `${100 - centerPos}%`; 
+        fill.style.top = "auto";
+      } else {
+        fill.style.height = `${centerPos - valuePos}%`;
+        fill.style.top = `${centerPos}%`;
+        fill.style.bottom = "auto";
+      }
+
+      thumb.style.top = `${100 - valuePos}%`;
+      thumb.style.transform = "translateY(-50%)";
+    }
+
+    function handleMouseDown(e: MouseEvent) {
+      isDragging = true;
+      handleMove(e);
+    }
+
+    function handleMove(e: MouseEvent) {
+      if (!isDragging) return;
+
+      const rect = track.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      const percent = Math.max(0, Math.min(100, (rect.height - y) / rect.height * 100));
+      const value = min + (percent / 100) * (max - min);
+      const roundedValue = Math.round(value * 10) / 10;
+
+      updateFill(roundedValue);
+      console.log(`Freq ${freq}Hz: ${roundedValue} dB`);
+    }
+
+    function handleMouseUp() {
+      isDragging = false;
+    }
+
+    thumb.addEventListener("mousedown", handleMouseDown);
+    track.addEventListener("mousedown", (e) => {
+      handleMouseDown(e);
+      handleMove(e);
     });
+    document.addEventListener("mousemove", handleMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    sliderContainer.appendChild(track);
+    sliderContainer.appendChild(centerLine);
+    sliderContainer.appendChild(fill);
+    sliderContainer.appendChild(thumb);
+
+    updateFill(0);
+
+    band.appendChild(sliderContainer);
 
     const label = document.createElement("span");
     label.textContent = freq >= 1000 ? `${freq / 1000}k` : `${freq}`;
 
-    band.appendChild(slider);
     band.appendChild(label);
     eqSliders.appendChild(band);
   });
