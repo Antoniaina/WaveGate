@@ -25,6 +25,10 @@ function createSliders(freqs: number[]) {
     const band = document.createElement("div");
     band.className = "eq-band";
 
+    const valueLabel = document.createElement("div");
+    valueLabel.className = "eq-value";
+    valueLabel.textContent = "0.0"
+
     const sliderContainer = document.createElement("div");
     sliderContainer.className = "eq-slider-container";
 
@@ -41,12 +45,13 @@ function createSliders(freqs: number[]) {
     centerLine.className = "eq-center-line";
 
     let isDragging = false;
-    let currentValue = 0;
+    // let currentValue = 0;
     const min = -12;
     const max = 12;
 
     function updateFill(value: number) {
-      currentValue = value;
+      // currentValue = value;
+      valueLabel.textContent =`${value >= 0 ? "+" : ""}${value.toFixed(1)}`;
       const centerPos = 50; 
       const valuePos = ((value - min) / (max - min)) * 100;
 
@@ -104,7 +109,7 @@ function createSliders(freqs: number[]) {
     sliderContainer.appendChild(thumb);
 
     updateFill(0);
-
+    band.appendChild(valueLabel);
     band.appendChild(sliderContainer);
 
     const label = document.createElement("span");
