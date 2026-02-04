@@ -1,3 +1,13 @@
+type EqState = {
+  enabled: boolean;
+  bands: Map<number, number>;
+};
+
+let eqState: EqState = {
+  enabled: true,
+  bands: new Map(),
+};
+
 const tabs = document.querySelectorAll<HTMLButtonElement>(".tab");
 const panels = document.querySelectorAll<HTMLElement>(".tab-panel");
 const eqSliders = document.getElementById("eq-sliders")!;
@@ -22,6 +32,7 @@ function createSliders(freqs: number[]) {
   eqSliders.innerHTML = "";
 
   freqs.forEach(freq => {
+    eqState.bands.set(freq, 0);
     const band = document.createElement("div");
     band.className = "eq-band";
 
@@ -88,7 +99,10 @@ function createSliders(freqs: number[]) {
       const roundedValue = Math.round(value * 10) / 10;
 
       updateFill(roundedValue);
-      console.log(`Freq ${freq}Hz: ${roundedValue} dB`);
+      eqState.bands.set(freq, roundedValue);
+      console.log(Object.fromEntries(eqState.bands));
+
+      // console.log(`Freq ${freq}Hz: ${roundedValue} dB`);
     }
 
     function handleMouseUp() {
@@ -118,6 +132,7 @@ function createSliders(freqs: number[]) {
     band.appendChild(label);
     eqSliders.appendChild(band);
   });
+
 }
 
 tabs.forEach((tab) => {
@@ -149,9 +164,8 @@ bandsSelect.addEventListener("change", () => {
 });
 
 eqEnabled.addEventListener("change", () => {
+  eqState.enabled = eqEnabled.checked;
   eqSliders.style.opacity = eqEnabled.checked ? "1" : "0.4";
   eqSliders.style.pointerEvents = eqEnabled.checked ? "auto" : "none";
-
-  console.log("EQ enabled:", eqEnabled.checked);
 });
 
