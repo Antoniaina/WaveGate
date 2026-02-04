@@ -1,7 +1,25 @@
+import { invoke } from "@tauri-apps/api/core";
+
 type EqState = {
   enabled: boolean;
   bands: Map<number, number>;
 };
+
+type EqPayload = {
+  enabled: boolean;
+  bands: Record<number, number>;
+}
+
+function sendEqState() {
+  const payload: EqPayload = {
+    enabled: eqState.enabled,
+    bands: Object.fromEntries(eqState.bands),
+  };
+
+  invoke("update_eq", {
+    payload
+  }).catch(console.error);    
+}
 
 let eqState: EqState = {
   enabled: true,
@@ -29,6 +47,7 @@ const FREQUENCIES_31 = [
 ];
 
 function createSliders(freqs: number[]) {
+  eqState.bands.clear();
   eqSliders.innerHTML = "";
 
   freqs.forEach(freq => {
@@ -56,12 +75,10 @@ function createSliders(freqs: number[]) {
     centerLine.className = "eq-center-line";
 
     let isDragging = false;
-    // let currentValue = 0;
     const min = -12;
     const max = 12;
 
     function updateFill(value: number) {
-      // currentValue = value;
       valueLabel.textContent =`${value >= 0 ? "+" : ""}${value.toFixed(1)}`;
       const centerPos = 50; 
       const valuePos = ((value - min) / (max - min)) * 100;
@@ -100,12 +117,14 @@ function createSliders(freqs: number[]) {
 
       updateFill(roundedValue);
       eqState.bands.set(freq, roundedValue);
-      console.log(Object.fromEntries(eqState.bands));
 
-      // console.log(`Freq ${freq}Hz: ${roundedValue} dB`);
+      console.log(Object.fromEntries(eqState.bands));
     }
 
     function handleMouseUp() {
+      if (isDragging) {
+        sendEqState();
+      }
       isDragging = false;
     }
 
@@ -165,6 +184,7 @@ bandsSelect.addEventListener("change", () => {
 
 eqEnabled.addEventListener("change", () => {
   eqState.enabled = eqEnabled.checked;
+  sendEqState();
   eqSliders.style.opacity = eqEnabled.checked ? "1" : "0.4";
   eqSliders.style.pointerEvents = eqEnabled.checked ? "auto" : "none";
 });

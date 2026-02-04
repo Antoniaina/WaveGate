@@ -1,6 +1,10 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::{
+    collections::HashMap, sync::Mutex
+};
+
 use tauri::{
     Manager,
     PhysicalPosition,
@@ -13,8 +17,33 @@ use tauri::{
     },
 };
 
+#[derive(Debug, serde::Deserialize)]
+struct EqPayload {
+    enabled: bool,
+    bands: HashMap<u32, f32>,
+}
+
+#[derive(Debug)]
+struct EqState {
+    enabled: bool,
+    bands: HashMap<u32, f32>,
+}
+
+#[tauri::command]
+fn update_eq(state: tauri::State<'_, Mutex<EqState>>, payload: EqPayload) -> Result<(), String> {
+    let mut eq = state.lock().unwrap();
+    
+    eq.enabled = payload.enabled;
+    eq.bands = payload.bands;
+
+    println!("EQ enabled: {}", eq.enabled);
+    println!("EQ bands: {:?}", eq.bands);
+    Ok(())
+}
+
 fn main() {
     tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![update_eq])
         .setup(|app| {
             let tray = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
@@ -56,6 +85,11 @@ fn main() {
                     let _ = window_handle.hide();
                 }
             });
+
+            app.manage(Mutex::new(EqState {
+                enabled: true,
+                bands: HashMap::new(),
+            }));
 
             Ok(())
         })
