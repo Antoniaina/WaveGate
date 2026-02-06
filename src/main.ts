@@ -75,8 +75,8 @@ function createSliders(freqs: number[]) {
     centerLine.className = "eq-center-line";
 
     let isDragging = false;
-    const min = -12;
-    const max = 12;
+    const min = -40;
+    const max = 40;
 
     function updateFill(value: number) {
       valueLabel.textContent =`${value >= 0 ? "+" : ""}${value.toFixed(1)}`;
