@@ -1,6 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::fs;
+
 use std::{
     collections::HashMap, sync::Mutex
 };
@@ -16,6 +18,8 @@ use tauri::{
         TrayIconEvent,
     },
 };
+
+const APO_CONFIG_PATH: &str = "C:\\Program Files\\EqualizerAPO\\config\\config.txt";
 
 #[derive(Debug, serde::Deserialize)]
 struct EqPayload {
@@ -36,14 +40,16 @@ fn update_eq(state: tauri::State<'_, Mutex<EqState>>, payload: EqPayload) -> Res
     eq.enabled = payload.enabled;
     eq.bands = payload.bands;
 
-    let config = graphic_eq_config(&eq);
+    let config = generate_graphic_eq_config(&eq);
 
-    println!(" {}", config);
+    println!("{}", config);
+
+    update_graphic_eq_line(&config)?;
     
     Ok(())
 }
 
-fn graphic_eq_config(eq: &EqState) -> String {
+fn generate_graphic_eq_config(eq: &EqState) -> String {
     let values = eq.bands
         .iter()
         .map(|(freq, gain)| format!("{} {}", freq, gain))
@@ -54,6 +60,39 @@ fn graphic_eq_config(eq: &EqState) -> String {
     format!("{prefix}GraphicEQ: {values}")
 }
 
+fn update_graphic_eq_line(new_line: &str) -> Result<(), String> {
+    let content = fs::read_to_string(APO_CONFIG_PATH)
+        .map_err(|e| format!("Failed to read config.txt: {}", e))?;
+
+    let mut found = false;
+
+    let updated = content
+        .lines()
+        .map(|line| {
+            let trimmed = line.trim_start();
+
+            if trimmed.starts_with("GraphicEQ:") || trimmed.starts_with("# GraphicEQ") {
+                found = true;
+                new_line.to_string()
+            } else {
+                line.to_string()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    let final_content = if found {
+        updated 
+    } else {
+        format!("{updated}\n{new_line}")
+    };
+
+    fs::write(APO_CONFIG_PATH, final_content)
+        .map_err(|e| format!("Failed to write config.txt: {}", e))?;
+
+    Ok(())
+    
+}
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![update_eq])
