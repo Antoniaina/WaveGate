@@ -36,9 +36,22 @@ fn update_eq(state: tauri::State<'_, Mutex<EqState>>, payload: EqPayload) -> Res
     eq.enabled = payload.enabled;
     eq.bands = payload.bands;
 
-    println!("EQ enabled: {}", eq.enabled);
-    println!("EQ bands: {:?}", eq.bands);
+    let config = graphic_eq_config(&eq);
+
+    println!(" {}", config);
+    
     Ok(())
+}
+
+fn graphic_eq_config(eq: &EqState) -> String {
+    let values = eq.bands
+        .iter()
+        .map(|(freq, gain)| format!("{} {}", freq, gain))
+        .collect::<Vec<_>>()
+        .join("; ");
+
+    let prefix = if eq.enabled {""} else {"# "};
+    format!("{prefix}GraphicEQ: {values}")
 }
 
 fn main() {
